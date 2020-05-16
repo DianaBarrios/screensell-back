@@ -22,6 +22,14 @@ const productSchema = mongoose.Schema({
     type: String,
     required: true,
   },
+  description: {
+    type: String,
+    required: true,
+  },
+  price: {
+    type: Number,
+    required: true,
+  },
 });
 
 const productsCollection = mongoose.model('products', productSchema);
@@ -51,6 +59,16 @@ const Products = {
   getProductbyName: function (name) {
     return productsCollection
       .find({ name: `${name}` })
+      .then((nameMatch) => {
+        return nameMatch;
+      })
+      .catch((err) => {
+        throw new Error(err);
+      });
+  },
+  getProductbyid: function (id) {
+    return productsCollection
+      .findOne({ id: `${id}` })
       .then((nameMatch) => {
         return nameMatch;
       })
