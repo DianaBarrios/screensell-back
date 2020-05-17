@@ -37,7 +37,6 @@ router.get('/:name', (req, res) => {
 });
 router.get('/getid/:id', (req, res) => {
   let id = req.params.id;
-
   Products.getProductbyid(id)
     .then((result) => {
       if (result.length == 0) {
@@ -53,7 +52,7 @@ router.get('/getid/:id', (req, res) => {
     });
 });
 /* GET users listing. */
-router.post('/newProduct', jsonParser, function (req, res, next) {
+router.post('/new', jsonParser, function (req, res, next) {
   let id = uuid.v4();
   let name = req.body.name;
   let stock = req.body.stock;
@@ -89,7 +88,7 @@ router.post('/newProduct', jsonParser, function (req, res, next) {
     return res.status(409).end();
   }
   if (typeof price !== 'number') {
-    res.statusMessage = 'Description must be a number';
+    res.statusMessage = 'Price must be a number';
     return res.status(409).end();
   }
 

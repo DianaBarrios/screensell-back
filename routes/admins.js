@@ -73,6 +73,50 @@ router.post('/new', jsonParser, function (req, res, next) {
     });
 });
 
+router.patch('/:id', jsonParser, (req, res) => {
+  let id = req.body.id;
+  let idParam = req.params.id;
+
+  if (!id) {
+    res.statusMessage = 'No body was sent';
+    return res.status(406).end();
+  }
+
+  if (id != idParam) {
+    res.statusMessage = 'Ids do not match';
+    return res.status(409).end();
+  }
+  let params = {};
+
+  if (req.body.firstName) {
+    params['firstName'] = req.body.firstName;
+  }
+
+  if (req.body.lastName) {
+    params['lastName'] = req.body.lastName;
+  }
+
+  if (req.body.email) {
+    params['email'] = req.body.email;
+  }
+
+  if (req.body.password) {
+    params['password'] = req.body.password;
+  }
+
+  Admins.updateAdmin(id, params)
+    .then((result) => {
+      if (!result) {
+        res.statusMessage = 'That id was not found in the admins list';
+        return res.status(404).end();
+      }
+      return res.status(202).json(result);
+    })
+    .catch((err) => {
+      res.statusMessage = err.message;
+      return res.status(500).end();
+    });
+});
 module.exports = router;
 
 // http://localhost:9000/admins/new - create

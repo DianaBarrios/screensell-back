@@ -39,7 +39,8 @@ const Reviews = {
   getAllReviews: function () {
     return reviewsCollection
       .find()
-      .populate('user', ['firstName', 'lastName'])
+      .populate('user', ['firstName', 'lastName', 'id'])
+      .populate('product', ['name', 'price'])
       .then((allReviews) => {
         return allReviews;
       })
@@ -50,6 +51,8 @@ const Reviews = {
   getReviewbyProduct: function (productID) {
     return reviewsCollection
       .find({ product: productID })
+      .populate('user', ['firstName', 'lastName', 'id'])
+      .populate('product', ['name', 'price'])
       .then((reviewMatch) => {
         return reviewMatch;
       })
@@ -60,6 +63,8 @@ const Reviews = {
   getReviewbyUser: function (user) {
     return reviewsCollection
       .find({ user: user })
+      .populate('user', ['firstName', 'lastName', 'id'])
+      .populate('product', ['name', 'price'])
       .then((reviewMatch) => {
         return reviewMatch;
       })
@@ -80,6 +85,8 @@ const Reviews = {
   updateReview: function (id, params) {
     return reviewsCollection
       .findOneAndUpdate({ id: id }, { $set: params }, { new: true })
+      .populate('user', ['firstName', 'lastName', 'id'])
+      .populate('product', ['name', 'price'])
       .then((review) => {
         return review;
       })

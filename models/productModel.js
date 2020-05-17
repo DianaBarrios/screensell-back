@@ -39,7 +39,6 @@ const Products = {
     return productsCollection
       .create(newProduct)
       .then((createdProduct) => {
-        console.log('si entra');
         return createdProduct;
       })
       .catch((err) => {

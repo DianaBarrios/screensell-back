@@ -2,6 +2,7 @@ var express = require('express');
 var router = express.Router();
 const uuid = require('uuid');
 const { Reviews } = require('../models/reviewModel');
+const { Orders } = require('../models/orderModel');
 const { Users } = require('../models/userModel');
 const { Products } = require('../models/productModel');
 var bodyParser = require('body-parser');
@@ -40,7 +41,7 @@ router.post('/new', jsonParser, function (req, res, next) {
       //http://localhost:9000/user/06d9f521-5480-4bbe-8e78-1c2fc230c0c2
       Users.getUserbyid(userid).then((user) => {
         if (user.length == 0) {
-          res.statusMessage = 'Product not found';
+          res.statusMessage = 'User not found';
           return res.status(404).end();
         }
         console.log(product);
@@ -69,6 +70,24 @@ router.post('/new', jsonParser, function (req, res, next) {
     .catch((err) => {
       res.statusMessage =
         'Something is wrong with the Database. Try again later.' + err.message;
+      return res.status(500).end();
+    });
+});
+
+router.delete('/:id', function (req, res, next) {
+  let id = req.params.id;
+
+  Reviews.deleteReview(id)
+    .then((result) => {
+      if (result.deletedCount == 0) {
+        res.statusMessage = 'The id was not found in the bookmarks list';
+        return res.status(404).end();
+      } else {
+        return res.status(200).end();
+      }
+    })
+    .catch((err) => {
+      res.statusMessage = 'Something wrong with the Database';
       return res.status(500).end();
     });
 });
