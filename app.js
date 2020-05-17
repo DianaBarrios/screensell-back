@@ -9,7 +9,8 @@ var usersRouter = require('./routes/users');
 var testAPIRouter = require('./routes/testAPI');
 var productsRouter = require('./routes/products');
 var reviewsRouter = require('./routes/reviews');
-var adminRouter = require('./routes/admins');
+var adminsRouter = require('./routes/admins');
+var ordersRouter = require('./routes/orders');
 var { mongoose } = require('./db/mongoose');
 
 const dotenv = require('dotenv');
@@ -33,8 +34,9 @@ app.use('/', indexRouter);
 app.use('/user', usersRouter);
 app.use('/testAPI', testAPIRouter);
 app.use('/product', productsRouter);
-app.use('/admin', adminRouter);
+app.use('/admin', adminsRouter);
 app.use('/review', reviewsRouter);
+app.use('/order', ordersRouter);
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {
   next(createError(404));
