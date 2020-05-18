@@ -60,10 +60,11 @@ router.post('/new', jsonParser, function (req, res, next) {
   let model = req.body.model;
   let description = req.body.description;
   let price = req.body.price;
+  let img = req.body.img;
 
-  if (!name || !stock || !type || !model || !description || !price) {
+  if (!name || !stock || !type || !model || !description || !price || !img) {
     res.statusMessage =
-      'One of these params is missing: name, stock, type, description, model or price';
+      'One of these params is missing: name, stock, type, description, image, model or price';
     return res.status(406).end();
   }
 
@@ -87,6 +88,10 @@ router.post('/new', jsonParser, function (req, res, next) {
     res.statusMessage = 'Description must be a number';
     return res.status(409).end();
   }
+  if (typeof img !== 'string') {
+    res.statusMessage = 'Img must be a link';
+    return res.status(409).end();
+  }
   if (typeof price !== 'number') {
     res.statusMessage = 'Price must be a number';
     return res.status(409).end();
@@ -100,11 +105,11 @@ router.post('/new', jsonParser, function (req, res, next) {
     model: model,
     description: description,
     price: price,
+    img: img,
   };
 
   Products.createProduct(newProduct)
     .then((createdProduct) => {
-      console.log(createdProduct);
       return res.status(201).json(createdProduct);
     })
     .catch((err) => {
@@ -170,6 +175,10 @@ router.patch('/:id', jsonParser, (req, res) => {
 
   if (req.body.price) {
     params['price'] = req.body.price;
+  }
+
+  if (req.body.img) {
+    params['img'] = req.body.img;
   }
 
   Products.updateProduct(id, params)
