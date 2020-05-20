@@ -1,6 +1,4 @@
 const mongoose = require('mongoose');
-const bcrypt = require('bcrypt');
-SALT_WORK_FACTOR = 10;
 
 const adminSchema = mongoose.Schema({
   id: {
@@ -25,32 +23,6 @@ const adminSchema = mongoose.Schema({
     required: true,
   },
 });
-
-adminSchema.pre('save', function (next) {
-  var admin = this;
-
-  // only hash the password if it has been modified (or is new)
-  if (!admin.isModified('password')) return next();
-
-  // generate a salt
-  bcrypt.genSalt(SALT_WORK_FACTOR, function (err, salt) {
-    if (err) return next(err);
-
-    bcrypt.hash(admin.password, salt, function (err, hash) {
-      if (err) return next(err);
-
-      admin.password = hash;
-      next();
-    });
-  });
-});
-
-adminSchema.methods.comparePassword = function (candidatePassword, cb) {
-  bcrypt.compare(candidatePassword, this.password, function (err, isMatch) {
-    if (err) return cb(err);
-    cb(null, isMatch);
-  });
-};
 
 const adminCollection = mongoose.model('admins', adminSchema);
 
@@ -85,6 +57,13 @@ const Admins = {
         return err;
       });
   },
+  getAdminByemail: function (email) {
+    return adminCollection.findOne({ email: email }).then(admin => {
+      return admin;
+    }).catch(err => {
+      return err;
+    })
+  }
 };
 
 module.exports = { Admins, adminSchema };

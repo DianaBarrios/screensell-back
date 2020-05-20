@@ -61,10 +61,9 @@ const Orders = {
         return err;
       });
   },
-  getOrdersbyUser: function (userid) {
+  getOrdersbyUser: function (user) {
     return ordersCollection
-      .find({ user: userid })
-      .populate('user', ['firstName', 'lastName', 'id'])
+      .find({ user: user })
       .then((order) => {
         return order;
       })
