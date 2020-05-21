@@ -55,11 +55,15 @@ router.post('/login', jsonParser, function (req, res, next) {
                 firstName: user.firstName,
                 lastName: user.lastName,
                 email: user.email,
+                type: 'user',
+                id: user.id,
+                address: user.address,
+                cellphone: user.cellphone,
               };
               jsonwebtoken.sign(
                 userData,
                 process.env.SECRET_TOKEN,
-                { expiresIn: '5m' },
+                { expiresIn: '15m' },
                 (err, token) => {
                   if (err) {
                     res.statusMessage =
@@ -86,7 +90,21 @@ router.post('/login', jsonParser, function (req, res, next) {
       return res.status(400).end();
     });
 });
+router.get('/validate', function (req, res, next) {
+  const { sessiontoken } = req.headers;
+  jsonwebtoken.verify(
+    sessiontoken,
+    process.env.SECRET_TOKEN,
+    (err, decoded) => {
+      if (err) {
+        res.statusMessage = 'Session expired!' + err.message;
+        return res.status(400).end();
+      }
 
+      return res.status(200).json(decoded);
+    }
+  );
+});
 router.get('/:id', function (req, res, next) {
   let id = req.params.id;
   const { sessiontoken } = req.headers;
@@ -102,11 +120,10 @@ router.get('/:id', function (req, res, next) {
         res.statusMessage = 'Session expired!';
         return res.status(400).end();
       }
-
       Users.getUserbyid(id)
         .then((result) => {
           if (result.length == 0) {
-            res.statusMessage = 'Product not found';
+            res.statusMessage = 'User not found';
             return res.status(404).end();
           }
           return res.status(200).json(result);

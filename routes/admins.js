@@ -35,8 +35,41 @@ router.get('/', function (req, res, next) {
   );
 });
 
+router.get('/:id', function (req, res, next) {
+  let id = req.params.id;
+  const { sessiontoken } = req.headers;
+  if (!sessiontoken) {
+    res.statusMessage = 'Session token is missing';
+    return res.status(400).end();
+  }
+  jsonwebtoken.verify(
+    sessiontoken,
+    process.env.SECRET_TOKEN,
+    (err, decoded) => {
+      if (err) {
+        res.statusMessage = 'Session expired!';
+        return res.status(400).end();
+      }
+
+      Admins.getAdminById(id)
+        .then((result) => {
+          if (!result) {
+            res.statusMessage = 'Admin not found';
+            return res.status(404).end();
+          }
+          return res.status(200).json(result);
+        })
+        .catch((err) => {
+          res.statusMessage =
+            'Something is wrong with the Database. Try again later.' +
+            err.message;
+          return res.status(500).end();
+        });
+    }
+  );
+});
+
 router.post('/login', jsonParser, function (req, res, next) {
-  console.log('login admin');
   let { email, password } = req.body;
   if (!email || !password) {
     res.statusMessage = 'One of these params is missing: email or password';
@@ -54,12 +87,13 @@ router.post('/login', jsonParser, function (req, res, next) {
                 firstName: admin.firstName,
                 lastName: admin.lastName,
                 email: admin.email,
+                type: 'admin',
+                id: admin.id,
               };
-
               jsonwebtoken.sign(
                 adminData,
                 process.env.SECRET_TOKEN,
-                { expiresIn: '1m' },
+                { expiresIn: '15m' },
                 (err, token) => {
                   if (err) {
                     res.statusMessage =
@@ -145,7 +179,6 @@ router.post('/new', jsonParser, function (req, res, next) {
             email: email,
             password: hashedPassword,
           };
-          console.log(newAdmin);
           Admins.createAdmin(newAdmin)
             .then((admin) => {
               return res.status(201).json(admin);
@@ -161,7 +194,8 @@ router.post('/new', jsonParser, function (req, res, next) {
           res.statusMessage = 'Something went wrong: ' + err.message;
           return res.status(400).end();
         });
-    });
+    }
+  );
 });
 
 router.patch('/:id', jsonParser, (req, res) => {

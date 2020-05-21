@@ -17,6 +17,7 @@ const adminSchema = mongoose.Schema({
   email: {
     type: String,
     required: true,
+    unique: true,
   },
   password: {
     type: String,
@@ -58,12 +59,25 @@ const Admins = {
       });
   },
   getAdminByemail: function (email) {
-    return adminCollection.findOne({ email: email }).then(admin => {
-      return admin;
-    }).catch(err => {
-      return err;
-    })
-  }
+    return adminCollection
+      .findOne({ email: email })
+      .then((admin) => {
+        return admin;
+      })
+      .catch((err) => {
+        return err;
+      });
+  },
+  getAdminById: function (id) {
+    return adminCollection
+      .findOne({ id: id })
+      .then((admin) => {
+        return admin;
+      })
+      .catch((err) => {
+        return err;
+      });
+  },
 };
 
 module.exports = { Admins, adminSchema };
