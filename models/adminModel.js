@@ -23,6 +23,14 @@ const adminSchema = mongoose.Schema({
     type: String,
     required: true,
   },
+  address: {
+    type: String,
+    required: true,
+  },
+  cellphone: {
+    type: String,
+    required: true,
+  },
 });
 
 const adminCollection = mongoose.model('admins', adminSchema);

@@ -19,7 +19,33 @@ router.get('/', function (req, res, next) {
         'Something is wrong with the Database. Try again later.';
       return res.status(500).end();
     });
+});
 
+router.get('/byProduct/:product', function (req, res, next) {
+  let productid = req.params.product;
+
+  Products.getProductbyid(productid)
+    .then((product) => {
+      if (product.length == 0) {
+        res.statusMessage = 'Product not found';
+        return res.status(404).end();
+      }
+      Reviews.getReviewbyProduct(product)
+        .then((result) => {
+          return res.status(200).json(result);
+        })
+        .catch((err) => {
+          res.statusMessage =
+            'Something is wrong with the Database. Try again later.' +
+            err.message;
+          return res.status(500).end();
+        });
+    })
+    .catch((err) => {
+      res.statusMessage =
+        'Something is wrong with the Database. Try again later.' + err.message;
+      return res.status(500).end();
+    });
 });
 
 router.post('/new', jsonParser, function (req, res, next) {
@@ -80,10 +106,12 @@ router.post('/new', jsonParser, function (req, res, next) {
         })
         .catch((err) => {
           res.statusMessage =
-            'Something is wrong with the Database. Try again later.' + err.message;
+            'Something is wrong with the Database. Try again later.' +
+            err.message;
           return res.status(500).end();
         });
-    });
+    }
+  );
 });
 
 router.delete('/:id', function (req, res, next) {
@@ -114,7 +142,8 @@ router.delete('/:id', function (req, res, next) {
           res.statusMessage = 'Something wrong with the Database';
           return res.status(500).end();
         });
-    });
+    }
+  );
 });
 
 module.exports = router;

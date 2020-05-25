@@ -128,10 +128,20 @@ router.post('/new', jsonParser, function (req, res, next) {
   let email = req.body.email;
   let password = req.body.password;
   let passsword2 = req.body.password2;
+  let address = req.body.address;
+  let cellphone = req.body.cellphone;
 
-  if (!firstName || !lastName || !email || !password || !passsword2) {
+  if (
+    !firstName ||
+    !lastName ||
+    !email ||
+    !password ||
+    !passsword2 ||
+    !cellphone ||
+    !address
+  ) {
     res.statusMessage =
-      'One of these params is missing: First Name, Last Name, email, or password';
+      'One of these params is missing: First Name, Last Name, cellphone, address, email, or password';
     return res.status(406).end();
   }
   const { sessiontoken } = req.headers;
@@ -162,6 +172,14 @@ router.post('/new', jsonParser, function (req, res, next) {
       }
       if (typeof password !== 'string') {
         res.statusMessage = 'Password must be a number';
+        return res.status(409).end();
+      }
+      if (typeof address !== 'string') {
+        res.statusMessage = 'Address must be a number';
+        return res.status(409).end();
+      }
+      if (typeof cellphone !== 'string') {
+        res.statusMessage = 'Cellphone must be a number';
         return res.status(409).end();
       }
       if (password !== passsword2) {
@@ -239,6 +257,14 @@ router.patch('/:id', jsonParser, (req, res) => {
 
       if (req.body.password) {
         params['password'] = req.body.password;
+      }
+
+      if (req.body.cellphone) {
+        params['cellphone'] = req.body.cellphone;
+      }
+
+      if (req.body.address) {
+        params['address'] = req.body.address;
       }
 
       Admins.updateAdmin(id, params)
