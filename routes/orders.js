@@ -36,6 +36,39 @@ router.get('/', function (req, res, next) {
   );
 });
 
+router.get('/status/:status', (req, res) => {
+  let status = req.params.status;
+  const { sessiontoken } = req.headers;
+  if (!sessiontoken) {
+    res.statusMessage = 'Session token is missing';
+    return res.status(400).end();
+  }
+  jsonwebtoken.verify(
+    sessiontoken,
+    process.env.SECRET_TOKEN,
+    (err, decoded) => {
+      if (err) {
+        res.statusMessage = 'Session expired!';
+        return res.status(400).end();
+      }
+      Orders.getOrdersbyStatus(status)
+        .then((result) => {
+          if (result.length == 0) {
+            res.statusMessage = 'Order not found';
+            return res.status(404).end();
+          }
+          return res.status(200).json(result);
+        })
+        .catch((err) => {
+          res.statusMessage =
+            'Something is wrong with the Database. Try again later.' +
+            err.message;
+          return res.status(500).end();
+        });
+    }
+  );
+});
+
 router.get('/:id', (req, res) => {
   let id = req.params.id;
   const { sessiontoken } = req.headers;
@@ -86,7 +119,6 @@ router.get('/byUser/:user', async (req, res) => {
       }
       Users.getUserbyid(id)
         .then(async (user) => {
-          console.log(user);
           Orders.getOrdersbyUser(user._id)
             .then((order) => {
               if (order.length == 0) {

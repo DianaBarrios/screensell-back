@@ -29,7 +29,6 @@ const Reviews = {
     return reviewsCollection
       .create(newReview)
       .then((review) => {
-        console.log('si entra');
         return review;
       })
       .catch((err) => {

@@ -24,6 +24,10 @@ const orderSchema = mongoose.Schema({
     type: Number,
     required: true,
   },
+  time: {
+    type: Date,
+    default: Date.now,
+  },
 });
 
 const ordersCollection = mongoose.model('orders', orderSchema);
@@ -74,6 +78,17 @@ const Orders = {
   getOrdersbyID: function (id) {
     return ordersCollection
       .find({ id: id })
+      .populate('user', ['firstName', 'lastName', 'id'])
+      .then((order) => {
+        return order;
+      })
+      .catch((err) => {
+        throw new Error(err);
+      });
+  },
+  getOrdersbyStatus: function (status) {
+    return ordersCollection
+      .find({ status: status })
       .populate('user', ['firstName', 'lastName', 'id'])
       .then((order) => {
         return order;

@@ -44,8 +44,6 @@ router.post('/login', jsonParser, function (req, res, next) {
 
   Users.getUserByemail(email)
     .then((user) => {
-      console.log(user);
-
       if (user) {
         bcrypt
           .compare(password, user.password)
