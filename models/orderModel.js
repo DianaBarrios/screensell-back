@@ -57,7 +57,7 @@ const Orders = {
   updateOrder: function (id, params) {
     return ordersCollection
       .findOneAndUpdate({ id: id }, { $set: params }, { new: true })
-      .populate('user', ['firstName', 'lastName', 'id', 'address', 'cellphone'])
+      .populate('user', ['firstName', 'lastName', 'id', 'address', 'cellphone','email'])
       .then((order) => {
         return order;
       })
