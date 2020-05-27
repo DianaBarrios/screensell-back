@@ -46,7 +46,7 @@ const Orders = {
   getAllOrders: function () {
     return ordersCollection
       .find()
-      .populate('user', ['firstName', 'lastName', 'id', 'address', 'cellphone'])
+      .populate('user', ['firstName', 'lastName', 'id', 'address', 'cellphone', 'email'])
       .then((allOrders) => {
         return allOrders;
       })
@@ -57,7 +57,7 @@ const Orders = {
   updateOrder: function (id, params) {
     return ordersCollection
       .findOneAndUpdate({ id: id }, { $set: params }, { new: true })
-      .populate('user', ['firstName', 'lastName', 'id', 'address', 'cellphone','email'])
+      .populate('user', ['firstName', 'lastName', 'id', 'address', 'cellphone', 'email'])
       .then((order) => {
         return order;
       })
@@ -78,7 +78,7 @@ const Orders = {
   getOrdersbyID: function (id) {
     return ordersCollection
       .find({ id: id })
-      .populate('user', ['firstName', 'lastName', 'id', 'address', 'cellphone'])
+      .populate('user', ['firstName', 'lastName', 'id', 'address', 'cellphone', 'email'])
       .then((order) => {
         return order;
       })
@@ -89,7 +89,7 @@ const Orders = {
   getOrdersbyStatus: function (status) {
     return ordersCollection
       .find({ status: status })
-      .populate('user', ['firstName', 'lastName', 'id', 'address', 'cellphone'])
+      .populate('user', ['firstName', 'lastName', 'id', 'address', 'cellphone', 'email'])
       .then((order) => {
         return order;
       })
