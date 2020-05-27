@@ -12,6 +12,7 @@ var reviewsRouter = require('./routes/reviews');
 var adminsRouter = require('./routes/admins');
 var ordersRouter = require('./routes/orders');
 var awsRouter = require('./routes/aws');
+var mailRouter = require('./routes/mail');
 var { mongoose } = require('./db/mongoose');
 
 const dotenv = require('dotenv');
@@ -38,6 +39,7 @@ app.use('/admin', adminsRouter);
 app.use('/review', reviewsRouter);
 app.use('/order', ordersRouter);
 app.use('/aws', awsRouter);
+app.use('/mail', mailRouter);
 
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {

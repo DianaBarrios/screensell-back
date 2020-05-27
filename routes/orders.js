@@ -148,8 +148,9 @@ router.post('/new', jsonParser, async function (req, res, next) {
   let { sessiontoken } = req.headers;
   let userid = req.body.user;
   let products = req.body.products;
+  let quantity = req.body.quantity;
   let id = uuid.v4();
-  let status = 'new';
+  let status = 'Nueva';
   let pids = [];
   let finalPrice = 0;
 
@@ -169,18 +170,18 @@ router.post('/new', jsonParser, async function (req, res, next) {
         res.statusMessage = 'Products are missing';
         return res.status(406).end();
       }
+
       Users.getUserbyid(userid)
         .then(async (user) => {
           if (user.length == 0) {
             res.statusMessage = 'User not found';
             return res.status(404).end();
           }
-
           for (let i = 0; i < products.length; i++) {
             await Products.getProductbyid(products[i])
               .then((p) => {
+                finalPrice += quantity[i] * p.price;
                 pids.push(p._id);
-                finalPrice += p.price;
                 return p;
               })
               .catch((err) => {
@@ -197,6 +198,7 @@ router.post('/new', jsonParser, async function (req, res, next) {
             user: user._id,
             products: pids,
             totalPrice: finalPrice,
+            quantity: quantity,
           };
           Orders.createOrder(newOrder)
             .then((order) => {
@@ -210,6 +212,7 @@ router.post('/new', jsonParser, async function (req, res, next) {
             });
         })
         .catch((err) => {
+          console.log('aver');
           res.statusMessage =
             'Something is wrong with the Database. Try again later.' +
             err.message;

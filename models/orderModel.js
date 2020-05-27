@@ -20,6 +20,10 @@ const orderSchema = mongoose.Schema({
     ref: 'products',
     required: true,
   },
+  quantity: {
+    type: [Number],
+    required: true,
+  },
   totalPrice: {
     type: Number,
     required: true,
@@ -72,6 +76,8 @@ const Orders = {
         return order;
       })
       .catch((err) => {
+        console.log('hola');
+
         throw new Error(err);
       });
   },
