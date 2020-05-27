@@ -196,6 +196,8 @@ router.post('/new', jsonParser, function (req, res, next) {
             lastName: lastName,
             email: email,
             password: hashedPassword,
+            cellphone: cellphone,
+            address: address
           };
           Admins.createAdmin(newAdmin)
             .then((admin) => {
