@@ -1,7 +1,8 @@
 var express = require('express');
 var router = express.Router();
 var uuid = require('uuid');
-var { Users, userSchema } = require('../models/userModel');
+var { Users } = require('../models/userModel');
+var { Products } = require('../models/productModel');
 var bodyParser = require('body-parser');
 var jsonParser = bodyParser.json();
 var bcrypt = require('bcrypt');
@@ -145,6 +146,7 @@ router.post('/new', jsonParser, function (req, res, next) {
   let passsword2 = req.body.password2;
   let address = req.body.address;
   let cellphone = req.body.cellphone;
+  let owns = [];
 
   if (
     !firstName ||
@@ -200,6 +202,7 @@ router.post('/new', jsonParser, function (req, res, next) {
         password: hashedPassword,
         address: address,
         cellphone: cellphone,
+        owns: []
       };
       Users.createUser(newUser)
         .then((user) => {
@@ -215,6 +218,38 @@ router.post('/new', jsonParser, function (req, res, next) {
     .catch((err) => {
       res.statusMessage = err.message;
       return res.status(400).end();
+    });
+});
+
+router.patch('/:id/owns', async (req, res) => {
+  let id = req.params.id;
+  let userid = req.body.id;
+  let ownsP = [];
+  let aux = req.body.owns;
+
+  if (id != userid) {
+    res.statusMessage = 'Ids do not match';
+    return res.status(409).end();
+  }
+
+  let params = {};
+
+  if (aux.length) {
+    params['owns'] = aux;
+  }
+
+
+  Users.updateUser(id, params)
+    .then((result) => {
+      if (!result) {
+        res.statusMessage = 'That id was not found in the users list';
+        return res.status(404).end();
+      }
+      return res.status(202).json(result);
+    })
+    .catch((err) => {
+      res.statusMessage = err.message;
+      return res.status(500).end();
     });
 });
 

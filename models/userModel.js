@@ -33,6 +33,11 @@ const userSchema = mongoose.Schema({
     type: String,
     required: true,
   },
+  owns: {
+    type: [mongoose.Schema.Types.ObjectId],
+    ref: 'products',
+    required: true,
+  }
 });
 
 const userCollection = mongoose.model('users', userSchema);
