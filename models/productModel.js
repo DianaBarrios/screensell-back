@@ -36,6 +36,8 @@ const productSchema = mongoose.Schema({
   },
 });
 
+productSchema.index({name: 'text', type: 'text', model: 'text', description: 'text'});
+
 const productsCollection = mongoose.model('products', productSchema);
 
 const Products = {
@@ -62,6 +64,16 @@ const Products = {
   getProductbyName: function (name) {
     return productsCollection
       .find({ name: `${name}` })
+      .then((nameMatch) => {
+        return nameMatch;
+      })
+      .catch((err) => {
+        throw new Error(err);
+      });
+  },
+  getProductsBySearchTerm: function (term) {
+    return productsCollection
+      .find({ $text: {$search: `"\"${term}\""`}})
       .then((nameMatch) => {
         return nameMatch;
       })

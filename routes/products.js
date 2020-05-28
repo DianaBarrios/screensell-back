@@ -36,6 +36,7 @@ router.get('/:name', (req, res) => {
       return res.status(500).end();
     });
 });
+
 router.get('/getid/:id', (req, res) => {
   let id = req.params.id;
   Products.getProductbyid(id)
@@ -52,7 +53,24 @@ router.get('/getid/:id', (req, res) => {
       return res.status(500).end();
     });
 });
-/* GET users listing. */
+
+router.get('/getResult/:q', (req, res) => {
+  let term = req.params.q
+  Products.getProductsBySearchTerm(term)
+    .then((result) => {
+      if (result.length == 0) {
+        res.statusMessage = 'Product not found';
+        return res.status(404).end();
+      }
+      return res.status(200).json(result);
+    })
+    .catch((err) => {
+      res.statusMessage =
+        'Something is wrong with the Database. Try again later.' + err.message;
+      return res.status(500).end();
+    });
+});
+
 router.post('/new', jsonParser, function (req, res, next) {
   const { sessiontoken } = req.headers;
   if (!sessiontoken) {
@@ -236,4 +254,5 @@ router.patch('/:id', jsonParser, (req, res) => {
         });
     });
 });
+
 module.exports = router;
