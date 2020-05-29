@@ -202,6 +202,7 @@ router.post('/new', jsonParser, function async(req, res, next) {
         password: hashedPassword,
         address: address,
         cellphone: cellphone,
+        type: 'user',
         owns: []
       };
 
