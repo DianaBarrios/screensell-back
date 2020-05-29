@@ -93,7 +93,7 @@ router.post('/login', jsonParser, function (req, res, next) {
               jsonwebtoken.sign(
                 adminData,
                 process.env.SECRET_TOKEN,
-                { expiresIn: '15m' },
+                { expiresIn: '30m' },
                 (err, token) => {
                   if (err) {
                     res.statusMessage =

@@ -62,7 +62,7 @@ router.post('/login', jsonParser, function (req, res, next) {
               jsonwebtoken.sign(
                 userData,
                 process.env.SECRET_TOKEN,
-                { expiresIn: '15m' },
+                { expiresIn: '30m' },
                 (err, token) => {
                   if (err) {
                     res.statusMessage =
@@ -137,7 +137,7 @@ router.get('/:id', function (req, res, next) {
   );
 });
 
-router.post('/new', jsonParser, function (req, res, next) {
+router.post('/new', jsonParser, function async(req, res, next) {
   let id = uuid.v4();
   let firstName = req.body.firstName;
   let lastName = req.body.lastName;
@@ -147,7 +147,7 @@ router.post('/new', jsonParser, function (req, res, next) {
   let address = req.body.address;
   let cellphone = req.body.cellphone;
   let owns = [];
-
+  let tokenUser = {};
   if (
     !firstName ||
     !lastName ||
@@ -193,7 +193,7 @@ router.post('/new', jsonParser, function (req, res, next) {
 
   bcrypt
     .hash(password, 10)
-    .then((hashedPassword) => {
+    .then(async (hashedPassword) => {
       let newUser = {
         id: id,
         firstName: firstName,
@@ -204,21 +204,36 @@ router.post('/new', jsonParser, function (req, res, next) {
         cellphone: cellphone,
         owns: []
       };
-      Users.createUser(newUser)
-        .then((user) => {
-          return res.status(201).json(user);
+
+      await jsonwebtoken.sign(
+        newUser,
+        process.env.SECRET_TOKEN,
+        { expiresIn: '15m' },
+        (err, token) => {
+          if (err) {
+            res.statusMessage =
+              'Something went wrong with generating the token.';
+            return res.status(400).end();
+          }
+
+          Users.createUser(newUser)
+            .then((user) => {
+              return res.status(201).json({ user, token });
+            })
+            .catch((err) => {
+              res.statusMessage =
+                'Something is wrong with the Database - Try again later! ' +
+                err.message;
+              return res.status(500).end();
+            });
         })
         .catch((err) => {
-          res.statusMessage =
-            'Something is wrong with the Database - Try again later! ' +
-            err.message;
-          return res.status(500).end();
+          res.statusMessage = err.message;
+          return res.status(400).end();
         });
-    })
-    .catch((err) => {
-      res.statusMessage = err.message;
-      return res.status(400).end();
-    });
+    }
+
+    );
 });
 
 router.patch('/:id/owns', async (req, res) => {
